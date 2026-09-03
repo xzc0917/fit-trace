@@ -31,7 +31,6 @@ export default function RecordWorkout() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const today = new Date().toISOString().slice(0, 10);
-  const token = useAuthStore((state) => state.token);
   const location = useLocation();
   const loadData = async () => {
     try {
@@ -133,7 +132,7 @@ export default function RecordWorkout() {
             <select
               className="input-field"
               value={selectedExerciseId}
-              onChange={(e) => setSelectedExerciseId(e.target.value)}
+              onChange={(e) => setSelectedExerciseId(e.target.value === '' ? '' : Number(e.target.value))}
               required
             >
               <option value="">-- 请选择动作 --</option>

@@ -29,7 +29,7 @@ export default function DietLog() {
   const [entries, setEntries] = useState<FoodEntry[]>([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const token = useAuthStore((state) => state.token);
+  
 
   // 固定为当天日期
   const today = new Date().toISOString().slice(0, 10);

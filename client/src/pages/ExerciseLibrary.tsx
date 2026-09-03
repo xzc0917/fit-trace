@@ -19,7 +19,6 @@ export default function ExerciseLibrary() {
   const [newCategory, setNewCategory] = useState('strength');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const token = useAuthStore((state) => state.token);
   const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
   const [editName, setEditName] = useState('');
   const [editCategory, setEditCategory] = useState('strength');
