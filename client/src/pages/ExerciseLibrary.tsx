@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getExercises, createCustomExercise, updateCustomExercise, deleteCustomExercise } from '../api/exercises';
-import { useAuthStore } from '../store/authStore';
 
 interface Exercise {
   id: number;

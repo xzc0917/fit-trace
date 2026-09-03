@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getExercises } from '../api/exercises';
 import { addRecord, getRecords, deleteRecord} from '../api/record';
-import { useAuthStore } from '../store/authStore';
 import { useLocation } from 'react-router-dom';
 interface Exercise {
   id: number;
