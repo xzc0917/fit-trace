@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  nickname     String
+  height       Float?
+  weight       Float?
+  avatarUrl    String?
+  age          Int?
+  gender       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  exerciseRecords ExerciseRecord[]
+  customExercises ExerciseLibrary[] @relation("CustomExercises")
+  foodEntries FoodEntry[]
+  weightLogs WeightLog[]
+  workoutTemplates WorkoutTemplate[]
+  friends        Friend[] @relation("UserFriends")
+  friendOf       Friend[] @relation("FriendUsers")
+  likesGiven Like[] @relation("UserLikes")
+  likesReceived Like[] @relation("TargetLikes")
+}
+
+model ExerciseLibrary {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  category    String
+  met         Float
+  isCustom    Boolean  @default(false)
+  createdById String?
+  createdBy   User?    @relation("CustomExercises", fields: [createdById], references: [id])
+  records     ExerciseRecord[]
+  templateExercises TemplateExercise[]
+}
+
+model ExerciseRecord {
+  id             Int      @id @default(autoincrement())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  exerciseId     Int
+  exercise       ExerciseLibrary @relation(fields: [exerciseId], references: [id])
+  date           String
+  sets           Int?
+  reps           Int?
+  weight         Float?
+  durationMin    Float?
+  caloriesBurned Float
+  createdAt      DateTime @default(now())
+}
+
+model FoodEntry {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  date      String
+  mealType  String
+  foodName  String
+  quantity  Float
+  unit      String
+  calories  Float
+  protein   Float
+  carbs     Float
+  fat       Float
+  createdAt DateTime @default(now())
+}
+
+model WeightLog {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  date      String
+  weight    Float
+  createdAt DateTime @default(now())
+}
+
+model Friend {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  friendId  String
+  status    String
+  createdAt DateTime @default(now())
+
+  user      User     @relation("UserFriends", fields: [userId], references: [id])
+  friend    User     @relation("FriendUsers", fields: [friendId], references: [id])
+}
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    String   // 点赞者
+  targetId  String   // 被点赞者（好友）
+  createdAt DateTime @default(now())
+
+  user      User     @relation("UserLikes", fields: [userId], references: [id])
+  target    User     @relation("TargetLikes", fields: [targetId], references: [id])
+}
+
+model WorkoutTemplate {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  name      String
+  exercises TemplateExercise[]
+  createdAt DateTime @default(now())
+}
+
+model TemplateExercise {
+  id          Int      @id @default(autoincrement())
+  templateId  Int
+  template    WorkoutTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  exerciseId  Int
+  exercise    ExerciseLibrary @relation(fields: [exerciseId], references: [id])
+  sets        Int?
+  reps        Int?
+  weight      Float?
+  durationMin Float?
+  order       Int      @default(0)
+}
