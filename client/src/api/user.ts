@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:3001/api';
-
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
 // 获取当前用户资料
 export async function getProfile(token: string) {
   const response = await axios.get(`${API_BASE}/user/profile`, {
