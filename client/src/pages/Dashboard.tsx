@@ -59,19 +59,19 @@ export default function Dashboard() {
   const COLORS = ['#00ff88', '#8b5cf6', '#ff6b35'];
 
   return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 30 }}>
-        <div>
-          <h1 className="page-title" style={{ marginBottom: 5 }}>首页</h1>
-<p style={{ color: '#a0a0b0' }}>你好，{user?.nickname} 👋，这是你今天的健康数据概览</p>
-        </div>
-        <button className="btn-secondary" onClick={() => navigate('/record')} style={{ width: 'auto', padding: '10px 20px' }}>
-          ➕ 快速记录
-        </button>
-      </div>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <div className="dashboard-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 10 }}>
+  <div style={{ flex: 1, minWidth: 0 }}>
+    <h1 className="page-title" style={{ marginBottom: 5 }}>首页</h1>
+    <p style={{ color: '#a0a0b0', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>你好，{user?.nickname} 👋，这是你今天的健康数据概览</p>
+  </div>
+  <button className="btn-secondary" onClick={() => navigate('/record')} style={{ width: 'auto', padding: '10px 20px' }}>
+    ➕ 快速记录
+  </button>
+</div>
 
       {/* 统计卡片 */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20, marginBottom: 30 }}>
+      <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12, marginBottom: 20 }}>
         {stats.map((s, i) => (
           <div key={i} className="glass-card" style={{ borderLeft: `4px solid ${s.color}`, padding: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -106,7 +106,7 @@ export default function Dashboard() {
       {/* 图表标签页切换 */}
       <div className="glass-card" style={{ padding: 25 }}>
         {/* 标签按钮 */}
-        <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 20, overflowX: 'auto', whiteSpace: 'nowrap' }}>
           <button
             className={activeTab === 'weight' ? 'btn-primary' : 'btn-secondary'}
             style={{ width: 'auto', padding: '8px 16px', fontSize: 14 }}
@@ -153,7 +153,7 @@ export default function Dashboard() {
           )}
 
           {activeTab === 'calories' && (
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" >
               <BarChart data={history}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
                 <XAxis dataKey="date" stroke="#a0a0b0" fontSize={12} />
