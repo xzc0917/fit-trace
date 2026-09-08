@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useAuthStore } from '../store/authStore';
 import { addWeightLog, getWeightLogs } from '../api/weight';
 
 export default function WeightLog() {
