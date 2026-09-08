@@ -14,6 +14,7 @@ export default function Profile() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [_profile, setProfile] = useState<any>(null);
 
   const genderLabels: Record<string, string> = { male: '男', female: '女', other: '其他' };
 
