@@ -46,14 +46,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           ☰
         </button>
         <span style={{ color: '#fff', fontWeight: 700 }}>
-          越减越<span style={{ color: '#00ff88' }}>肥</span>
+          越减越<span style={{ color: '#ff6b9d', textShadow: '2px 2px 0 #2b2b2b' }}>肥</span>
         </span>
       </div>
 
       {/* 侧边栏 */}
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 20, padding: '0 16px', color: '#fff' }}>
-          越减越<span style={{ color: '#00ff88' }}>肥</span>
+          越减越<span style={{ color: '#ff6b9d', textShadow: '2px 2px 0 #2b2b2b' }}>肥</span>
         </div>
 
         <Link to="/" className={location.pathname === '/' ? 'active' : ''} onClick={closeSidebar}>
