@@ -7,7 +7,6 @@ export default function WeightLog() {
   const [logs, setLogs] = useState<any[]>([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const token = useAuthStore((state) => state.token);
 
   const loadLogs = async () => {
     try {

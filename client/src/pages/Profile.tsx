@@ -5,7 +5,6 @@ import { getProfile, updateProfile } from '../api/user';
 export default function Profile() {
   const token = useAuthStore((state) => state.token)!;
   const { user } = useAuthStore();
-  const [profile, setProfile] = useState<any>(null);
   const [editMode, setEditMode] = useState(false);
   const [nickname, setNickname] = useState('');
   const [height, setHeight] = useState<number | ''>('');
