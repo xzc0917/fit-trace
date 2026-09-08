@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getExercises } from '../api/exercises';
 import { addRecord, getRecords, deleteRecord } from '../api/record';
-import { useAuthStore } from '../store/authStore';
-
 interface Exercise { id: number; name: string; category: string; met: number; }
 interface Record { id: number; exercise: Exercise; sets: number | null; reps: number | null; weight: number | null; durationMin: number | null; caloriesBurned: number; }
 
