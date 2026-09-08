@@ -21,191 +21,105 @@ export default function Dashboard() {
       try {
         const sum = await getSummary();
         setSummary(sum);
-
         const today = new Date();
         const from = new Date(today);
         from.setDate(today.getDate() - (range - 1));
-        const fromStr = from.toISOString().slice(0, 10);
-        const toStr = today.toISOString().slice(0, 10);
-
-        const hist = await getHistory(fromStr, toStr);
+        const hist = await getHistory(from.toISOString().slice(0,10), today.toISOString().slice(0,10));
         setHistory(hist);
-      } catch (err) {
-        console.error(err);
-      }
+      } catch (err) { console.error(err); }
     };
     loadData();
   }, [range]);
 
   const stats = summary ? [
-  { label: '运动消耗', value: `${Number(summary.totalBurned).toFixed(1)} kcal`, icon: '🔥', color: '#00ff88', valueColor: '#fff' },
-  { label: '饮食摄入', value: `${Number(summary.totalIntake).toFixed(1)} kcal`, icon: '🍔', color: '#ff6b35', valueColor: '#fff' },
-  { 
-    label: summary.netCalories >= 0 ? '热量盈余' : '热量缺口',
-    value: `${Math.abs(Math.round(summary.netCalories))} kcal`,
-    icon: '⚖️',
-    color: summary.netCalories >= 0 ? '#ff6b6b' : '#00ff88',
-    valueColor: summary.netCalories >= 0 ? '#ff6b6b' : '#00ff88' // 数字颜色同状态
-  },
-  { label: '今日体重', value: summary.weight ? `${Number(summary.weight).toFixed(1)} kg` : '未记录', icon: '📏', color: '#8b5cf6', valueColor: '#fff' },
-] : [];
-
-  const pieData = summary ? [
-  { name: '蛋白质', value: Number(summary.protein.toFixed(1)) },
-  { name: '碳水', value: Number(summary.carbs.toFixed(1)) },
-  { name: '脂肪', value: Number(summary.fat.toFixed(1)) },
-] : [];
-
-  const COLORS = ['#00ff88', '#8b5cf6', '#ff6b35'];
+    { label: '运动消耗', value: `${Number(summary.totalBurned).toFixed(1)} kcal`, icon: '🔥', color: '#ff6b9d' },
+    { label: '饮食摄入', value: `${Number(summary.totalIntake).toFixed(1)} kcal`, icon: '🍔', color: '#4ecdc4' },
+    { label: summary.netCalories >= 0 ? '热量盈余' : '热量缺口', value: `${Math.abs(Math.round(summary.netCalories))} kcal`, icon: '⚡', color: summary.netCalories >= 0 ? '#ff6b9d' : '#4ecdc4' },
+    { label: '今日体重', value: summary.weight ? `${Number(summary.weight).toFixed(1)} kg` : '未记录', icon: '🎯', color: '#ffb347' },
+  ] : [];
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <div className="dashboard-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 10 }}>
-  <div style={{ flex: 1, minWidth: 0 }}>
-    <h1 className="page-title" style={{ marginBottom: 5 }}>首页</h1>
-    <p style={{ color: '#a0a0b0', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>你好，{user?.nickname} 👋，这是你今天的健康数据概览</p>
-  </div>
-  <button className="btn-secondary" onClick={() => navigate('/record')} style={{ width: 'auto', padding: '10px 20px' }}>
-    ➕ 快速记录
-  </button>
-</div>
+    <div style={{ background: '#fff3e0', minHeight: '100vh', padding: 20, fontFamily: "'Nunito', 'Arial Rounded MT Bold', sans-serif", color: '#2b2b2b' }}>
+      {/* 顶部 */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 30, flexWrap: 'wrap', gap: 10 }}>
+        <div>
+          <h1 style={{ fontSize: 40, margin: 0, color: '#ff6b9d', textShadow: '2px 2px 0 #2b2b2b' }}>HEY! {user?.nickname} ✨</h1>
+          <p style={{ color: '#2b2b2b', marginTop: 8, fontSize: 18 }}>今天也要元气满满哦～</p>
+        </div>
+        <button
+          onClick={() => navigate('/record')}
+          style={{ background: '#4ecdc4', color: '#2b2b2b', border: '3px solid #2b2b2b', padding: '12px 24px', borderRadius: 30, fontSize: 16, fontWeight: 700, cursor: 'pointer', boxShadow: '3px 3px 0 #2b2b2b' }}
+        >
+          ➕ 快速记录
+        </button>
+      </div>
 
       {/* 统计卡片 */}
-      <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 20, marginBottom: 30 }}>
         {stats.map((s, i) => (
-          <div key={i} className="glass-card" style={{ borderLeft: `4px solid ${s.color}`, padding: 20 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ fontSize: 32 }}>{s.icon}</div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ color: '#a0a0b0', fontSize: 15, marginBottom: 4 }}>{s.label}</div>
-                <div style={{ fontSize: 30, fontWeight: 700, color: s.valueColor }}>{s.value}</div>
-              </div>
-            </div>
+          <div key={i} style={{ background: s.color, border: '3px solid #2b2b2b', borderRadius: 20, padding: 20, boxShadow: '4px 4px 0 #2b2b2b' }}>
+            <div style={{ fontSize: 36, marginBottom: 10 }}>{s.icon}</div>
+            <div style={{ color: '#fff', fontSize: 14, marginBottom: 8, fontWeight: 700 }}>{s.label}</div>
+            <div style={{ fontSize: 26, fontWeight: 900, color: '#2b2b2b' }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {/* 范围切换 */}
       <div style={{ marginBottom: 20, display: 'flex', gap: 10 }}>
-        <button
-          className={range === 7 ? 'btn-primary' : 'btn-secondary'}
-          style={{ width: 'auto', padding: '10px 20px' }}
-          onClick={() => setRange(7)}
-        >
-          最近7天
-        </button>
-        <button
-          className={range === 30 ? 'btn-primary' : 'btn-secondary'}
-          style={{ width: 'auto', padding: '10px 20px' }}
-          onClick={() => setRange(30)}
-        >
-          最近30天
-        </button>
+        <button onClick={() => setRange(7)} style={{ padding: '10px 20px', border: '3px solid #2b2b2b', borderRadius: 20, background: range===7 ? '#ffe66d' : '#fff', color: '#2b2b2b', fontWeight: 700, cursor: 'pointer', boxShadow: '3px 3px 0 #2b2b2b' }}>7天</button>
+        <button onClick={() => setRange(30)} style={{ padding: '10px 20px', border: '3px solid #2b2b2b', borderRadius: 20, background: range===30 ? '#ffe66d' : '#fff', color: '#2b2b2b', fontWeight: 700, cursor: 'pointer', boxShadow: '3px 3px 0 #2b2b2b' }}>30天</button>
       </div>
 
-      {/* 图表标签页切换 */}
-      <div className="glass-card" style={{ padding: 25 }}>
-        {/* 标签按钮 */}
-          <div style={{ display: 'flex', gap: 8, marginBottom: 20, overflowX: 'auto', whiteSpace: 'nowrap' }}>
-          <button
-            className={activeTab === 'weight' ? 'btn-primary' : 'btn-secondary'}
-            style={{ width: 'auto', padding: '8px 16px', fontSize: 14 }}
-            onClick={() => setActiveTab('weight')}
-          >
-            📈 体重趋势
-          </button>
-          <button
-            className={activeTab === 'calories' ? 'btn-primary' : 'btn-secondary'}
-            style={{ width: 'auto', padding: '8px 16px', fontSize: 14 }}
-            onClick={() => setActiveTab('calories')}
-          >
-            🔥 热量趋势
-          </button>
-          <button
-            className={activeTab === 'nutrition' ? 'btn-primary' : 'btn-secondary'}
-            style={{ width: 'auto', padding: '8px 16px', fontSize: 14 }}
-            onClick={() => setActiveTab('nutrition')}
-          >
-            🥗 营养占比
-          </button>
+      {/* 图表卡片 */}
+      <div style={{ background: '#fff', border: '3px solid #2b2b2b', borderRadius: 20, padding: 20, boxShadow: '4px 4px 0 #2b2b2b' }}>
+        <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
+          {['weight', 'calories', 'nutrition'].map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab as any)} style={{ padding: '8px 16px', border: '3px solid #2b2b2b', borderRadius: 20, background: activeTab===tab ? '#ff6b9d' : '#fff', color: '#2b2b2b', fontWeight: 700, cursor: 'pointer', boxShadow: '3px 3px 0 #2b2b2b' }}>
+              {tab === 'weight' ? '📈 体重' : tab === 'calories' ? '🔥 热量' : '🥗 营养'}
+            </button>
+          ))}
         </div>
-
-        {/* 图表内容 */}
-        <div style={{ minHeight: 280 }}>
+        <div style={{ minHeight: 250 }}>
           {activeTab === 'weight' && (
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" height={250}>
               <LineChart data={history}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-                <XAxis dataKey="date" stroke="#a0a0b0" fontSize={12} />
-                <YAxis domain={['auto', 'auto']} stroke="#a0a0b0" fontSize={12} />
-                <Tooltip
-                  contentStyle={{
-                    background: '#1a1a2e',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: 8,
-                    color: '#fff',
-                  }}
-                />
-                <Legend />
-                <Line type="monotone" dataKey="weight" stroke="#8b5cf6" name="体重(kg)" connectNulls strokeWidth={2} dot={{ r: 3 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
+                <XAxis dataKey="date" stroke="#2b2b2b" />
+                <YAxis stroke="#2b2b2b" />
+                <Tooltip contentStyle={{ background: '#fff', border: '3px solid #2b2b2b', borderRadius: 20, color: '#2b2b2b' }} />
+                <Line type="monotone" dataKey="weight" stroke="#ff6b9d" strokeWidth={3} dot={{ r: 5 }} />
               </LineChart>
             </ResponsiveContainer>
           )}
-
           {activeTab === 'calories' && (
-            <ResponsiveContainer width="100%" >
+            <ResponsiveContainer width="100%" height={250}>
               <BarChart data={history}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-                <XAxis dataKey="date" stroke="#a0a0b0" fontSize={12} />
-                <YAxis stroke="#a0a0b0" fontSize={12} />
-                <Tooltip
-                  contentStyle={{
-                    background: '#1a1a2e',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: 8,
-                    color: '#fff',
-                  }}
-                />
-                <Legend />
-                <Bar dataKey="caloriesIntake" fill="#ff6b35" name="摄入(kcal)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="caloriesBurned" fill="#00ff88" name="消耗(kcal)" radius={[4, 4, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
+                <XAxis dataKey="date" stroke="#2b2b2b" />
+                <YAxis stroke="#2b2b2b" />
+                <Tooltip contentStyle={{ background: '#fff', border: '3px solid #2b2b2b', borderRadius: 20, color: '#2b2b2b' }} />
+                <Bar dataKey="caloriesIntake" fill="#4ecdc4" name="摄入" radius={[6,6,0,0]} />
+                <Bar dataKey="caloriesBurned" fill="#ffb347" name="消耗" radius={[6,6,0,0]} />
               </BarChart>
             </ResponsiveContainer>
           )}
-
-          {activeTab === 'nutrition' && (
-            summary && (summary.protein + summary.carbs + summary.fat) > 0 ? (
-              <ResponsiveContainer width="100%" height={280}>
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    label
-                  >
-                    {pieData.map((_, index) => (
-  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      background: '#1a1a2e',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: 8,
-                      color: '#fff',
-                    }}
-                  />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 280, color: '#666' }}>
-                暂无营养数据，请先记录今日饮食
-              </div>
-            )
+          {activeTab === 'nutrition' && summary && (
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie data={[
+                  { name: '蛋白质', value: summary.protein },
+                  { name: '碳水', value: summary.carbs },
+                  { name: '脂肪', value: summary.fat },
+                ]} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                  <Cell fill="#ff6b9d" />
+                  <Cell fill="#ffe66d" />
+                  <Cell fill="#4ecdc4" />
+                </Pie>
+                <Tooltip contentStyle={{ background: '#fff', border: '3px solid #2b2b2b', borderRadius: 20, color: '#2b2b2b' }} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
           )}
         </div>
       </div>
