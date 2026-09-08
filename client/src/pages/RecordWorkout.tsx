@@ -17,7 +17,7 @@ export default function RecordWorkout() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const today = new Date().toISOString().slice(0, 10);
-  const token = useAuthStore((state) => state.token);
+
 
   const loadData = async () => {
     try {

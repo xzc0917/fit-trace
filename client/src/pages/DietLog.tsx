@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { addFoodEntry, getFoodEntries } from '../api/food';
-import { useAuthStore } from '../store/authStore';
 
 interface FoodEntry { id: number; mealType: string; foodName: string; quantity: number; unit: string; calories: number; protein: number; carbs: number; fat: number; }
 
