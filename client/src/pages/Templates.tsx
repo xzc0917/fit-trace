@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getTemplates, createTemplate, deleteTemplate, applyTemplate } from '../api/templates';
 import { getExercises } from '../api/exercises';
-import { useNavigate } from 'react-router-dom';
+
 interface Exercise {
   id: number;
   name: string;
@@ -25,7 +25,7 @@ export default function Templates() {
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+
   const loadData = async () => {
     try {
       const [tpls, exs] = await Promise.all([getTemplates(), getExercises()]);
@@ -39,9 +39,7 @@ export default function Templates() {
     }
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   const addExerciseToTemplate = (exerciseId: number) => {
     if (!selectedExercises.find((e) => e.exerciseId === exerciseId)) {
@@ -61,87 +59,45 @@ export default function Templates() {
 
   const handleCreate = async () => {
     setMessage('');
-    if (!templateName || selectedExercises.length === 0) {
-      setMessage('请填写模板名称并添加动作');
-      return;
-    }
+    if (!templateName || selectedExercises.length === 0) { setMessage('请填写模板名称并添加动作'); return; }
     setSubmitting(true);
     try {
-      await createTemplate({
-        name: templateName,
-        exercises: selectedExercises,
-      });
-      setMessage('✅ 模板创建成功');
-      setTemplateName('');
-      setSelectedExercises([]);
-      setShowForm(false);
-      loadData();
-    } catch (err: any) {
-      setMessage(err.response?.data?.error || '创建失败');
-    } finally {
-      setSubmitting(false);
-    }
+      await createTemplate({ name: templateName, exercises: selectedExercises });
+      setMessage('✅ 模板创建成功'); setTemplateName(''); setSelectedExercises([]); setShowForm(false); loadData();
+    } catch (err: any) { setMessage(err.response?.data?.error || '创建失败'); } finally { setSubmitting(false); }
   };
 
   const handleDelete = async (id: number) => {
-    if (confirm('确定删除此模板吗？')) {
-      await deleteTemplate(id);
-      loadData();
-    }
+    if (confirm('确定删除此模板吗？')) { await deleteTemplate(id); loadData(); }
   };
 
   const handleApply = async (id: number) => {
-  setMessage('');
-  try {
-    const result = await applyTemplate(id);
-    // 跳转到运动记录页面，并通过 state 传递成功消息
-    navigate('/record', {
-      state: { message: `✅ 已应用模板，共添加 ${result.count} 个动作到今日记录` },
-    });
-  } catch (err: any) {
-    setMessage(err.response?.data?.error || '应用失败');
-  }
-};
+    setMessage('');
+    try {
+      const result = await applyTemplate(id);
+      setMessage(`✅ 已应用模板，共添加 ${result.count} 个动作到今日记录`);
+    } catch (err: any) { setMessage(err.response?.data?.error || '应用失败'); }
+  };
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30 }}>
-        <div>
-          <h1 className="page-title" style={{ marginBottom: 5 }}>训练模板</h1>
-          <p style={{ color: '#a0a0b0' }}>保存常用动作组合，下次训练一键加载</p>
-        </div>
-        <button className="btn-primary" style={{ width: 'auto', padding: '10px 20px' }} onClick={() => setShowForm(!showForm)}>
-          {showForm ? '取消创建' : '➕ 新建模板'}
-        </button>
+    <div style={{ fontFamily: "'Nunito', 'Arial Rounded MT Bold', sans-serif", color: '#2b2b2b' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 10 }}>
+        <h1 style={{ fontSize: 32, color: '#ff6b9d', textShadow: '2px 2px 0 #2b2b2b', margin: 0 }}>训练模板 📋</h1>
+        <button onClick={() => setShowForm(!showForm)} style={{ padding: '10px 20px', border: '3px solid #2b2b2b', borderRadius: 30, background: '#4ecdc4', color: '#2b2b2b', fontWeight: 700, cursor: 'pointer', boxShadow: '3px 3px 0 #2b2b2b' }}>{showForm ? '取消创建' : '➕ 新建模板'}</button>
       </div>
 
-      {/* 创建模板表单 */}
       {showForm && (
-        <div className="glass-card" style={{ padding: 25, marginBottom: 30 }}>
-          <h3 style={{ marginBottom: 20, fontSize: 18 }}>📋 创建训练模板</h3>
+        <div style={{ background: '#fff', border: '3px solid #2b2b2b', borderRadius: 20, padding: 20, boxShadow: '4px 4px 0 #2b2b2b', marginBottom: 20 }}>
+          <h3 style={{ fontSize: 20, marginBottom: 15 }}>📋 创建训练模板</h3>
           <div style={{ marginBottom: 15 }}>
-            <label style={{ display: 'block', marginBottom: 8, color: '#a0a0b0', fontSize: 14 }}>模板名称</label>
-            <input
-              className="input-field"
-              value={templateName}
-              onChange={(e) => setTemplateName(e.target.value)}
-              placeholder="例如：胸肩日"
-            />
+            <label style={{ fontWeight: 700, display: 'block', marginBottom: 6 }}>模板名称</label>
+            <input value={templateName} onChange={(e) => setTemplateName(e.target.value)} placeholder="例如：胸肩日" style={{ width: '100%', padding: 12, border: '3px solid #2b2b2b', borderRadius: 15 }} />
           </div>
-
           <div style={{ marginBottom: 15 }}>
-            <label style={{ display: 'block', marginBottom: 8, color: '#a0a0b0', fontSize: 14 }}>添加动作（可多次选择）</label>
-            <select
-              className="input-field"
-              onChange={(e) => addExerciseToTemplate(Number(e.target.value))}
-              defaultValue=""
-            >
+            <label style={{ fontWeight: 700, display: 'block', marginBottom: 6 }}>添加动作（可多次选择）</label>
+            <select onChange={(e) => addExerciseToTemplate(Number(e.target.value))} defaultValue="" style={{ width: '100%', padding: 12, border: '3px solid #2b2b2b', borderRadius: 15, background: '#fff' }}>
               <option value="" disabled>选择动作</option>
-              {exercises.map((ex) => (
-                <option key={ex.id} value={ex.id}>
-                  {ex.name} ({ex.category === 'strength' ? '力量' : '有氧'})
-                </option>
-              ))}
+              {exercises.map((ex) => <option key={ex.id} value={ex.id}>{ex.name} ({ex.category === 'strength' ? '力量' : '有氧'})</option>)}
             </select>
           </div>
 
@@ -150,58 +106,19 @@ export default function Templates() {
               {selectedExercises.map((se, idx) => {
                 const ex = exercises.find((e) => e.id === se.exerciseId);
                 return (
-                  <div key={idx} className="glass-card" style={{ padding: 15 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <div key={idx} style={{ background: '#fff3e0', border: '3px solid #2b2b2b', borderRadius: 15, padding: 15 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                       <strong>{ex?.name}</strong>
-                      <button
-                        type="button"
-                        className="btn-secondary"
-                        style={{ width: 'auto', padding: '5px 10px', fontSize: 12 }}
-                        onClick={() => removeExerciseFromTemplate(idx)}
-                      >
-                        移除
-                      </button>
+                      <button type="button" onClick={() => removeExerciseFromTemplate(idx)} style={{ background: '#ff5e5b', color: '#fff', border: '2px solid #2b2b2b', borderRadius: 10, padding: '4px 8px', cursor: 'pointer' }}>移除</button>
                     </div>
                     {ex?.category === 'strength' ? (
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-                        <div>
-                          <label style={{ display: 'block', fontSize: 12, color: '#a0a0b0', marginBottom: 4 }}>组数</label>
-                          <input
-                            type="number"
-                            className="input-field"
-                            placeholder="组数"
-                            onChange={(e) => updateExerciseField(idx, 'sets', Number(e.target.value))}
-                          />
-                        </div>
-                        <div>
-                          <label style={{ display: 'block', fontSize: 12, color: '#a0a0b0', marginBottom: 4 }}>次数</label>
-                          <input
-                            type="number"
-                            className="input-field"
-                            placeholder="次数"
-                            onChange={(e) => updateExerciseField(idx, 'reps', Number(e.target.value))}
-                          />
-                        </div>
-                        <div>
-                          <label style={{ display: 'block', fontSize: 12, color: '#a0a0b0', marginBottom: 4 }}>重量(kg)</label>
-                          <input
-                            type="number"
-                            className="input-field"
-                            placeholder="重量"
-                            onChange={(e) => updateExerciseField(idx, 'weight', Number(e.target.value))}
-                          />
-                        </div>
+                        <input type="number" placeholder="组数" onChange={(e) => updateExerciseField(idx, 'sets', Number(e.target.value))} style={{ width: '100%', padding: 8, border: '2px solid #2b2b2b', borderRadius: 10 }} />
+                        <input type="number" placeholder="次数" onChange={(e) => updateExerciseField(idx, 'reps', Number(e.target.value))} style={{ width: '100%', padding: 8, border: '2px solid #2b2b2b', borderRadius: 10 }} />
+                        <input type="number" placeholder="重量" onChange={(e) => updateExerciseField(idx, 'weight', Number(e.target.value))} style={{ width: '100%', padding: 8, border: '2px solid #2b2b2b', borderRadius: 10 }} />
                       </div>
                     ) : (
-                      <div>
-                        <label style={{ display: 'block', fontSize: 12, color: '#a0a0b0', marginBottom: 4 }}>时长(分钟)</label>
-                        <input
-                          type="number"
-                          className="input-field"
-                          placeholder="时长"
-                          onChange={(e) => updateExerciseField(idx, 'durationMin', Number(e.target.value))}
-                        />
-                      </div>
+                      <input type="number" placeholder="时长(分钟)" onChange={(e) => updateExerciseField(idx, 'durationMin', Number(e.target.value))} style={{ width: '100%', padding: 8, border: '2px solid #2b2b2b', borderRadius: 10 }} />
                     )}
                   </div>
                 );
@@ -209,55 +126,28 @@ export default function Templates() {
             </div>
           )}
 
-          <button className="btn-primary" disabled={submitting} onClick={handleCreate}>
-            {submitting ? '保存中...' : '保存模板'}
-          </button>
-          {message && <p style={{ marginTop: 15, color: message.includes('✅') ? '#00ff88' : '#ff6b6b' }}>{message}</p>}
+          <button onClick={handleCreate} disabled={submitting} style={{ padding: '12px 24px', background: '#4ecdc4', color: '#2b2b2b', border: '3px solid #2b2b2b', borderRadius: 30, fontWeight: 700, cursor: 'pointer', boxShadow: '3px 3px 0 #2b2b2b' }}>{submitting ? '保存中...' : '保存模板'}</button>
+          {message && <p style={{ marginTop: 15, fontWeight: 600 }}>{message}</p>}
         </div>
       )}
 
-      {/* 模板列表 */}
-      {loading ? (
-        <p style={{ color: '#666' }}>加载中...</p>
-      ) : templates.length === 0 ? (
-        <div className="glass-card" style={{ padding: 40, textAlign: 'center', color: '#666' }}>
-          还没有训练模板，点击上方按钮创建第一个模板吧！
-        </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
+      {loading ? <p>加载中...</p> : templates.length === 0 ? <div style={{ background: '#fff', border: '3px solid #2b2b2b', borderRadius: 20, padding: 30, textAlign: 'center', boxShadow: '4px 4px 0 #2b2b2b' }}>还没有训练模板</div> : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
           {templates.map((tpl) => (
-            <div key={tpl.id} className="glass-card" style={{ padding: 20 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
-                <h3 style={{ fontSize: 18 }}>{tpl.name}</h3>
+            <div key={tpl.id} style={{ background: '#fff', border: '3px solid #2b2b2b', borderRadius: 20, padding: 20, boxShadow: '4px 4px 0 #2b2b2b' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 15 }}>
+                <h3 style={{ fontSize: 18, margin: 0 }}>{tpl.name}</h3>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <button
-                    className="btn-primary"
-                    style={{ width: 'auto', padding: '5px 12px', fontSize: 12 }}
-                    onClick={() => handleApply(tpl.id)}
-                  >
-                    应用
-                  </button>
-                  <button
-                    className="btn-secondary"
-                    style={{ width: 'auto', padding: '5px 10px', fontSize: 12 }}
-                    onClick={() => handleDelete(tpl.id)}
-                  >
-                    删除
-                  </button>
+                  <button onClick={() => handleApply(tpl.id)} style={{ background: '#4ecdc4', color: '#2b2b2b', border: '2px solid #2b2b2b', borderRadius: 10, padding: '5px 10px', fontWeight: 700, cursor: 'pointer' }}>应用</button>
+                  <button onClick={() => handleDelete(tpl.id)} style={{ background: '#ff5e5b', color: '#fff', border: '2px solid #2b2b2b', borderRadius: 10, padding: '5px 10px', fontWeight: 700, cursor: 'pointer' }}>删除</button>
                 </div>
               </div>
-              <div style={{ color: '#a0a0b0', fontSize: 13, marginBottom: 10 }}>
-                {tpl.exercises.length} 个动作
-              </div>
+              <div style={{ fontSize: 13, color: '#6b705c', marginBottom: 10 }}>{tpl.exercises.length} 个动作</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {tpl.exercises.map((item: any) => (
                   <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
                     <span>{item.exercise.name}</span>
-                    <span style={{ color: '#a0a0b0' }}>
-                      {item.exercise.category === 'strength'
-                        ? `${item.sets || '-'}组 × ${item.reps || '-'}次 ${item.weight ? item.weight + 'kg' : ''}`
-                        : `${item.durationMin || '-'}分钟`}
-                    </span>
+                    <span style={{ color: '#6b705c' }}>{item.exercise.category === 'strength' ? `${item.sets || '-'}组 × ${item.reps || '-'}次 ${item.weight ? item.weight + 'kg' : ''}` : `${item.durationMin || '-'}分钟`}</span>
                   </div>
                 ))}
               </div>
